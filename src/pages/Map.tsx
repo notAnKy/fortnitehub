@@ -304,6 +304,7 @@ const Map = () => {
                 src={showImg === 'pois' ? mapData.images.pois : mapData.images.blank}
                 alt="Fortnite Map"
                 draggable={false}
+                loading="eager" decoding="async"
                 style={{
                   width: '100%', height: '100%',
                   objectFit: 'cover', display: 'block',

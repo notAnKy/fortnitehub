@@ -116,6 +116,7 @@ const PlaylistCard = ({ playlist, onClick }: CardProps) => {
           <img
             src={image}
             alt={playlist.name}
+            loading="lazy" decoding="async"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -218,7 +219,7 @@ const PlaylistModal = ({ playlist, onClose }: ModalProps) => {
         {/* Hero */}
         <div className="relative" style={{ aspectRatio: '16/9' }}>
           {image ? (
-            <img src={image} alt={playlist.name} className="w-full h-full object-cover" />
+            <img src={image} alt={playlist.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
           ) : (
             <div
               className="w-full h-full flex items-center justify-center text-6xl"
@@ -246,6 +247,8 @@ const PlaylistModal = ({ playlist, onClose }: ModalProps) => {
                 src={playlist.images.missionIcon}
                 alt="icon"
                 className="w-14 h-14 object-contain rounded-xl border border-white/10 shrink-0"
+                loading="lazy"
+                decoding="async"
               />
             )}
           </div>

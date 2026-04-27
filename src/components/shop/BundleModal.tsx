@@ -74,7 +74,7 @@ const BundleModal = ({ entry, onClose }: Props) => {
 
           <div className="flex gap-4 items-center">
             {bundleImage && (
-              <img src={bundleImage} alt={bundleName} className="w-20 h-20 object-cover rounded-xl border border-white/20" />
+              <img src={bundleImage} alt={bundleName} loading="lazy" decoding="async" className="w-20 h-20 object-cover rounded-xl border border-white/20" />
             )}
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -86,7 +86,7 @@ const BundleModal = ({ entry, onClose }: Props) => {
               <h2 className="text-white font-black text-2xl uppercase">{bundleName}</h2>
               {bundleInfo && <p className="text-gray-300 text-sm mt-1">{bundleInfo}</p>}
               <div className="flex items-center gap-2 mt-2">
-                <img src="https://fortnite-api.com/images/vbuck.png" alt="vbucks" className="w-5 h-5" />
+                <img src="https://fortnite-api.com/images/vbuck.png" alt="vbucks" loading="lazy" decoding="async" className="w-5 h-5" />
                 <span className="text-yellow-400 font-black text-xl">{entry.finalPrice.toLocaleString()}</span>
                 {entry.regularPrice !== entry.finalPrice && (
                   <span className="text-gray-400 line-through text-sm">{entry.regularPrice.toLocaleString()}</span>
@@ -117,7 +117,7 @@ const BundleModal = ({ entry, onClose }: Props) => {
                   <div className={`absolute inset-0 bg-linear-to-b ${itemGradient} opacity-75`} />
                   <div className="relative aspect-square">
                     {itemImg && (
-                      <img src={itemImg} alt={item?.name ?? ''} className="w-full h-full object-cover" />
+                      <img src={itemImg} alt={item?.name ?? ''} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     )}
                   </div>
                   <div className="relative bg-black/70 px-2 py-1.5">

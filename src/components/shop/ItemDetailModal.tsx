@@ -52,7 +52,7 @@ useEffect(() => {
         {/* Hero image */}
         <div className={`relative bg-linear-to-b ${gradient} aspect-square`}>
           {featuredImg && (
-            <img src={featuredImg} alt={item.name} className="w-full h-full object-cover" />
+            <img src={featuredImg} alt={item.name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           )}
           <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full">
             <span className="text-white text-xs font-bold capitalize">{item.rarity?.displayValue}</span>
@@ -101,6 +101,8 @@ useEffect(() => {
                         src={item.images.lego!.large ?? item.images.lego!.small}
                         alt="LEGO version"
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                     <span className="text-yellow-400 text-xs font-bold">LEGO</span>
@@ -112,6 +114,8 @@ useEffect(() => {
                       <img
                         src={item.images.bean!.large ?? item.images.bean!.small}
                         alt="Bean version"
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
                     </div>

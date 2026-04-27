@@ -4,3 +4,7 @@ select option {
   background-color: #1a1a2e;
   color: white;
 }
+
+img {
+  content-visibility: auto;
+}

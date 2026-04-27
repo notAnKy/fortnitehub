@@ -133,7 +133,7 @@ const ShopItemCard = ({ entry }: Props) => {
         {/* Image / Album art */}
         <div className="relative aspect-square">
           {image
-            ? <img src={image} alt={displayName} className="w-full h-full object-cover" />
+            ? <img src={image} alt={displayName} className="w-full h-full object-cover" loading="lazy" decoding="async" />
             : (
               <div className="w-full h-full flex items-center justify-center">
                 <span className="text-4xl">

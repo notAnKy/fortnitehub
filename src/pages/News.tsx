@@ -36,6 +36,7 @@ const MotdCard = ({ motd, accent, onClick }: MotdCardProps) => {
           <img
             src={image}
             alt={motd.title}
+            loading="lazy" decoding="async"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -98,7 +99,7 @@ const MessageCard = ({ msg, accent }: MessageCardProps) => (
   >
     {msg.image && (
       <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-white/10">
-        <img src={msg.image} alt={msg.title} className="w-full h-full object-cover" />
+        <img src={msg.image} alt={msg.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
       </div>
     )}
     <div className="flex-1 min-w-0">
@@ -156,7 +157,7 @@ const MotdModal = ({ motd, accent, onClose }: MotdModalProps) => {
 
         {image && (
           <div className="relative aspect-video">
-            <img src={image} alt={motd.title} className="w-full h-full object-cover" />
+            <img src={image} alt={motd.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
             <div className="absolute inset-0 bg-linear-to-t from-[#0d1117] via-transparent to-transparent" />
           </div>
         )}
@@ -328,6 +329,8 @@ const News = () => {
                   src={currentData.image}
                   alt={currentTab.label}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute inset-0 bg-linear-to-r from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-6 left-6">

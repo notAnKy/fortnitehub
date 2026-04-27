@@ -162,7 +162,7 @@ const CosmeticCard = ({ item, onClick }: { item: BRCosmetic; onClick: () => void
       <div className={`absolute inset-0 bg-linear-to-b ${gradient} opacity-80`} />
       <div className="relative aspect-square">
         {image
-          ? <img src={image} alt={item.name} className="w-full h-full object-cover" loading="lazy" />
+          ? <img src={image} alt={item.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
           : <div className="w-full h-full flex items-center justify-center text-3xl">🎮</div>
         }
       </div>
