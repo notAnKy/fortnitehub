@@ -5,7 +5,7 @@ import BundleModal from './BundleModal'
 
 interface Props {
   entry: ShopEntry
-  entryIndex: number
+  entryIndex?: number
 }
 
 const rarityColors: Record<string, string> = {

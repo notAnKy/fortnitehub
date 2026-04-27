@@ -37,11 +37,6 @@ const PLATFORM_LABELS: Record<string, string> = {
   xbl:  'Xbox',
 }
 
-const PLATFORM_ICONS: Record<string, string> = {
-  epic: '🎮',
-  psn:  '🎮',
-  xbl:  '🎮',
-}
 
 // ── Small stat cell ────────────────────────────────────────────────────────────
 const Cell = ({ label, value, color }: { label: string; value: string; color?: string }) => (
