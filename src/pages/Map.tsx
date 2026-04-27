@@ -296,8 +296,8 @@ const Map = () => {
                 transformOrigin: 'center center',
                 transition: dragging ? 'none' : 'transform 0.15s ease',
                 position: 'relative',
-                width:  'min(100%, calc(100vh - 56px))',
-                height: 'min(100%, calc(100vh - 56px))',
+                width:  'min(100vw, calc(100vh - 56px))',
+                height: 'min(100vw, calc(100vh - 56px))',
               }}
             >
               <img
