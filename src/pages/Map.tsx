@@ -13,15 +13,16 @@ interface MapData {
 }
 
 const Map = () => {
-  const [mapData,  setMapData]  = useState<MapData | null>(null)
-  const [loading,  setLoading]  = useState(true)
-  const [error,    setError]    = useState<string | null>(null)
-  const [showImg,  setShowImg]  = useState<'pois' | 'blank'>('pois')
-  const [hovered,  setHovered]  = useState<POI | null>(null)
-  const [search,   setSearch]   = useState('')
-  const [scale,    setScale]    = useState(1)
-  const [offset,   setOffset]   = useState({ x: 0, y: 0 })
-  const [dragging, setDragging] = useState(false)
+  const [mapData,     setMapData]     = useState<MapData | null>(null)
+  const [loading,     setLoading]     = useState(true)
+  const [error,       setError]       = useState<string | null>(null)
+  const [showImg,     setShowImg]     = useState<'pois' | 'blank'>('pois')
+  const [hovered,     setHovered]     = useState<POI | null>(null)
+  const [search,      setSearch]      = useState('')
+  const [scale,       setScale]       = useState(1)
+  const [offset,      setOffset]      = useState({ x: 0, y: 0 })
+  const [dragging,    setDragging]    = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const dragStart  = useRef({ x: 0, y: 0, ox: 0, oy: 0 })
   const wrapperRef = useRef<HTMLDivElement>(null)
@@ -49,6 +50,41 @@ const Map = () => {
     if (scale <= 1) setOffset({ x: 0, y: 0 })
   }, [scale])
 
+  // Touch pinch zoom
+  const lastTouchDist = useRef<number | null>(null)
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX
+      const dy = e.touches[0].clientY - e.touches[1].clientY
+      lastTouchDist.current = Math.sqrt(dx * dx + dy * dy)
+    } else if (e.touches.length === 1 && scale > 1) {
+      setDragging(true)
+      dragStart.current = {
+        x: e.touches[0].clientX, y: e.touches[0].clientY,
+        ox: offset.x, oy: offset.y
+      }
+    }
+  }
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastTouchDist.current !== null) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX
+      const dy = e.touches[0].clientY - e.touches[1].clientY
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      const factor = dist / lastTouchDist.current
+      setScale(prev => Math.min(Math.max(prev * factor, 1), 8))
+      lastTouchDist.current = dist
+    } else if (e.touches.length === 1 && dragging) {
+      setOffset({
+        x: dragStart.current.ox + e.touches[0].clientX - dragStart.current.x,
+        y: dragStart.current.oy + e.touches[0].clientY - dragStart.current.y,
+      })
+    }
+  }
+  const onTouchEnd = () => {
+    lastTouchDist.current = null
+    setDragging(false)
+  }
+
   const onMouseDown = (e: React.MouseEvent) => {
     if (scale <= 1) return
     setDragging(true)
@@ -71,30 +107,47 @@ const Map = () => {
     .filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => a.name.localeCompare(b.name))
 
-  // Ocean color from the Fortnite map image
   const OCEAN_COLOR = '#1b3d5c'
 
   return (
     <div
-      className="flex text-white"
+      className="flex text-white relative"
       style={{ height: 'calc(100vh - 56px)', background: '#0d1117', overflow: 'hidden' }}
     >
       {/* ── SIDEBAR ─────────────────────────────────────────────────── */}
+      {/* Desktop: always visible | Mobile: slides in from left */}
       <aside
-        className="w-72 shrink-0 flex flex-col border-r border-white/5"
-        style={{ background: 'rgba(8,11,20,0.99)' }}
+        className={`
+          absolute lg:relative z-30
+          w-72 shrink-0 flex flex-col border-r border-white/5
+          transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+        style={{
+          background: 'rgba(8,11,20,0.99)',
+          height: '100%',
+        }}
       >
-        <div className="px-5 pt-5 pb-3 border-b border-white/5">
-          <h1 className="text-lg font-black uppercase tracking-widest">
-            Battle Royale <span className="text-[#00d4ff]">Map</span>
-          </h1>
-          {mapData && (
-            <p className="text-gray-600 text-xs mt-0.5">
-              {mapData.pois.length} named locations
-            </p>
-          )}
+        {/* Sidebar header */}
+        <div className="px-4 pt-4 pb-3 border-b border-white/5 flex items-center justify-between">
+          <div>
+            <h1 className="text-base font-black uppercase tracking-widest">
+              Battle Royale <span className="text-[#00d4ff]">Map</span>
+            </h1>
+            {mapData && (
+              <p className="text-gray-600 text-xs mt-0.5">{mapData.pois.length} named locations</p>
+            )}
+          </div>
+          {/* Close button — mobile only */}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 hover:text-white"
+          >
+            ×
+          </button>
         </div>
 
+        {/* Search */}
         <div className="px-4 py-3 border-b border-white/5">
           <div className="relative">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
@@ -131,9 +184,6 @@ const Map = () => {
               }`} />
             </button>
           </div>
-          <p className="text-gray-600 text-xs mt-2 leading-relaxed">
-            Location names are shown directly on the map image.
-          </p>
         </div>
 
         {/* POI list */}
@@ -151,6 +201,7 @@ const Map = () => {
                 key={poi.id}
                 onMouseEnter={() => setHovered(poi)}
                 onMouseLeave={() => setHovered(null)}
+                onClick={() => setSidebarOpen(false)}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 border-b border-white/5 text-left transition-colors ${
                   active ? 'bg-[#00d4ff]/10' : 'hover:bg-white/5'
                 }`}
@@ -179,6 +230,14 @@ const Map = () => {
         </div>
       </aside>
 
+      {/* Backdrop — mobile only */}
+      {sidebarOpen && (
+        <div
+          className="absolute inset-0 z-20 bg-black/50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* ── MAP AREA ─────────────────────────────────────────────────── */}
       <div
         ref={wrapperRef}
@@ -191,7 +250,28 @@ const Map = () => {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
+        {/* Mobile top bar */}
+        <div className="absolute top-3 left-3 z-10 flex items-center gap-2 lg:hidden">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold border border-white/20 text-white"
+            style={{ background: 'rgba(8,11,20,0.85)', backdropFilter: 'blur(10px)' }}
+          >
+            📍 Locations
+          </button>
+          <button
+            onClick={() => setShowImg(v => v === 'pois' ? 'blank' : 'pois')}
+            className="px-3 py-2 rounded-xl text-xs font-bold border border-white/20 text-white"
+            style={{ background: 'rgba(8,11,20,0.85)', backdropFilter: 'blur(10px)' }}
+          >
+            {showImg === 'pois' ? '🏷️ Labels On' : '🏷️ Labels Off'}
+          </button>
+        </div>
+
         {loading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
             <div className="w-14 h-14 relative">
@@ -225,12 +305,9 @@ const Map = () => {
                 alt="Fortnite Map"
                 draggable={false}
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  userSelect: 'none',
-                  borderRadius: '20px',
+                  width: '100%', height: '100%',
+                  objectFit: 'cover', display: 'block',
+                  userSelect: 'none', borderRadius: '16px',
                 }}
               />
             </div>
@@ -244,26 +321,22 @@ const Map = () => {
             style={{
               background: 'rgba(8,11,20,0.92)',
               backdropFilter: 'blur(12px)',
-              zIndex: 40,
-              borderRadius: '12px',
+              zIndex: 40, borderRadius: '12px',
             }}
           >
-            <button
-              onClick={zoomIn}
-              className="w-10 h-10 flex items-center justify-center text-white text-xl font-black hover:bg-white/10 transition-colors border-b border-white/10"
-            >+</button>
+            <button onClick={zoomIn}
+              className="w-10 h-10 flex items-center justify-center text-white text-xl font-black hover:bg-white/10 transition-colors border-b border-white/10">
+              +
+            </button>
             <div className="w-10 h-7 flex items-center justify-center text-gray-500 text-xs font-bold border-b border-white/10 select-none">
               {Math.round(scale * 100)}%
             </div>
-            <button
-              onClick={zoomOut}
-              className="w-10 h-10 flex items-center justify-center text-white text-xl font-black hover:bg-white/10 transition-colors border-b border-white/10"
-            >−</button>
-            <button
-              onClick={reset}
-              title="Reset view"
-              className="w-10 h-9 flex items-center justify-center hover:bg-white/10 transition-colors"
-            >
+            <button onClick={zoomOut}
+              className="w-10 h-10 flex items-center justify-center text-white text-xl font-black hover:bg-white/10 transition-colors border-b border-white/10">
+              −
+            </button>
+            <button onClick={reset} title="Reset view"
+              className="w-10 h-9 flex items-center justify-center hover:bg-white/10 transition-colors">
               <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -275,10 +348,20 @@ const Map = () => {
         {/* Hint */}
         {scale === 1 && !loading && !error && (
           <div
-            className="absolute bottom-5 left-5 px-3 py-1.5 rounded-lg text-xs border border-white/10"
+            className="absolute bottom-5 left-5 px-3 py-1.5 rounded-lg text-xs border border-white/10 hidden sm:block"
             style={{ background: 'rgba(8,11,20,0.8)', color: '#6b7280', zIndex: 40 }}
           >
             🖱 Scroll to zoom · Drag to pan
+          </div>
+        )}
+
+        {/* Mobile hint */}
+        {scale === 1 && !loading && !error && (
+          <div
+            className="absolute bottom-5 left-5 px-3 py-1.5 rounded-lg text-xs border border-white/10 sm:hidden"
+            style={{ background: 'rgba(8,11,20,0.8)', color: '#6b7280', zIndex: 40 }}
+          >
+            👌 Pinch to zoom · Drag to pan
           </div>
         )}
       </div>

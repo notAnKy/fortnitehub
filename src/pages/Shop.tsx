@@ -311,14 +311,12 @@ const Shop = () => {
 
               {filterOpen && (
                 <div
-                  className="absolute top-full mt-2 right-0 z-50 rounded-2xl border border-white/10 shadow-2xl p-4"
+                  className="fixed sm:absolute top-auto sm:top-full left-2 right-2 sm:left-auto sm:right-0 mt-2 z-50 rounded-2xl border border-white/10 shadow-2xl p-4"
                   style={{
                     background: 'rgba(15,18,30,0.98)',
                     backdropFilter: 'blur(20px)',
-                    // On mobile: full width from left edge, on desktop: fixed 420px
-                    width: 'min(420px, calc(100vw - 2rem))',
-                    // Ensure it never goes off the right edge
-                    right: 0,
+                    width: 'auto',
+                    top: 'auto',
                   }}
                 >
                   <button
