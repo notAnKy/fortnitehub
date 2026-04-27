@@ -5,7 +5,6 @@ import BundleModal from './BundleModal'
 
 interface Props {
   entry: ShopEntry
-  entryIndex?: number
 }
 
 const rarityColors: Record<string, string> = {
@@ -34,7 +33,7 @@ const VBuckIcon = () => (
   <img src="https://fortnite-api.com/images/vbuck.png" alt="vbucks" className="w-3.5 h-3.5 inline-block" />
 )
 
-const ShopItemCard = ({ entry, entryIndex }: Props) => {
+const ShopItemCard = ({ entry }: Props) => {
   const [showBundle, setShowBundle] = useState(false)
   const [selectedItem, setSelectedItem] = useState<ShopItem | null>(null)
 
