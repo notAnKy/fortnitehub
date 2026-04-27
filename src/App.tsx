@@ -6,6 +6,7 @@ import Cosmetics from './pages/Cosmetics'
 import Stats from './pages/Stats'
 import News from './pages/News'
 import Playlists from './pages/Playlists'
+import NotFound from './pages/NotFound'
 import './index.css'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path="/stats"      element={<Stats />}     />
           <Route path="/news"       element={<News />}      />
           <Route path="/playlists"  element={<Playlists />} />
+          <Route path="*"           element={<NotFound />}  />
         </Routes>
       </div>
     </BrowserRouter>
@@ -27,4 +29,3 @@ function App() {
 }
 
 export default App
-
