@@ -56,7 +56,7 @@ const BundleModal = ({ entry, onClose }: Props) => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-100 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
@@ -64,7 +64,7 @@ const BundleModal = ({ entry, onClose }: Props) => {
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="relative bg-linear-to-r from-purple-900 to-blue-900 p-5 flex-shrink-0">
+        <div className="relative bg-linear-to-r from-purple-900 to-blue-900 p-5 shrink-0">
           <button
             onClick={onClose}
             className="absolute top-3 right-3 bg-black/40 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/60 text-lg font-bold"

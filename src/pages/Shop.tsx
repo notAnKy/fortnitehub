@@ -512,7 +512,6 @@ const Shop = () => {
                     <ShopItemCard
                       key={`${group.name}-${index}`}
                       entry={entry}
-                      entryIndex={index}
                     />
                   ))}
                 </div>
