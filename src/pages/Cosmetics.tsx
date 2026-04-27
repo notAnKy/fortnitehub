@@ -57,7 +57,7 @@ const CosmeticModal = ({ item, onClose }: { item: BRCosmetic; onClose: () => voi
 
   return (
     <div
-      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-200 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
