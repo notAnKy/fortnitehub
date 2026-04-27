@@ -315,8 +315,10 @@ const Shop = () => {
                   style={{
                     background: 'rgba(15,18,30,0.98)',
                     backdropFilter: 'blur(20px)',
-                    width: 'auto',
                     top: 'auto',
+                    maxHeight: '80vh',
+                    overflowY: 'auto',
+                    minWidth: '320px',  
                   }}
                 >
                   <button
