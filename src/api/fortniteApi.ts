@@ -1,28 +1,46 @@
-const BASE_URL = 'https://fortnite-api.com'
-const API_KEY  = import.meta.env.VITE_FORTNITE_API_KEY
-const headers  = { 'Authorization': API_KEY }
+// In development: call fortnite-api.com directly
+// In production: call through our Vercel proxy (hides the API key)
+const isDev = import.meta.env.DEV
+
+const buildUrl = (path: string, params?: Record<string, string>): string => {
+  if (isDev) {
+    const url = new URL(`https://fortnite-api.com/${path}`)
+    if (params) Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v))
+    return url.toString()
+  } else {
+    const url = new URL('/api/proxy', window.location.origin)
+    url.searchParams.set('path', path)
+    if (params) Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v))
+    return url.toString()
+  }
+}
+
+const API_KEY = import.meta.env.VITE_FORTNITE_API_KEY
+
+const fetchFN = async (path: string, params?: Record<string, string>) => {
+  const url = buildUrl(path, params)
+  const headers: Record<string, string> = isDev ? { 'Authorization': API_KEY } : {}
+  const res  = await fetch(url, { headers })
+  return res.json()
+}
 
 export const getItemShop = async () => {
-  const res  = await fetch(`${BASE_URL}/v2/shop`, { headers })
-  const data = await res.json()
+  const data = await fetchFN('v2/shop')
   return data.data
 }
 
 export const getMap = async () => {
-  const res  = await fetch(`${BASE_URL}/v1/map`, { headers })
-  const data = await res.json()
+  const data = await fetchFN('v1/map')
   return data.data
 }
 
 export const getNewCosmetics = async () => {
-  const res  = await fetch(`${BASE_URL}/v2/cosmetics/new`, { headers })
-  const data = await res.json()
+  const data = await fetchFN('v2/cosmetics/new')
   return data.data
 }
 
 export const getAllBRCosmetics = async () => {
-  const res  = await fetch(`${BASE_URL}/v2/cosmetics/br`, { headers })
-  const data = await res.json()
+  const data = await fetchFN('v2/cosmetics/br')
   return data.data as BRCosmetic[]
 }
 
@@ -33,11 +51,9 @@ export const getPlayerStats = async (
   const platforms = ['epic', 'psn', 'xbl'] as const
   const results = await Promise.allSettled(
     platforms.map(async accountType => {
-      const params = new URLSearchParams({ name, accountType, timeWindow })
-      const res    = await fetch(`${BASE_URL}/v2/stats/br/v2?${params}`, { headers })
-      const json   = await res.json()
-      if (json.status !== 200) throw new Error('not found')
-      return { data: json.data as PlayerStats, platform: accountType }
+      const data = await fetchFN('v2/stats/br/v2', { name, accountType, timeWindow })
+      if (data.status !== 200) throw new Error('not found')
+      return { data: data.data as PlayerStats, platform: accountType }
     })
   )
   const found = results.find(r => r.status === 'fulfilled') as
@@ -47,14 +63,12 @@ export const getPlayerStats = async (
 }
 
 export const getNews = async () => {
-  const res  = await fetch(`${BASE_URL}/v2/news`, { headers })
-  const data = await res.json()
+  const data = await fetchFN('v2/news')
   return data.data as NewsData
 }
 
 export const getPlaylists = async () => {
-  const res  = await fetch(`${BASE_URL}/v1/playlists`, { headers })
-  const data = await res.json()
+  const data = await fetchFN('v1/playlists')
   return data.data as Playlist[]
 }
 
