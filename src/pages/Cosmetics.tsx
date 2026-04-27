@@ -25,23 +25,23 @@ const rarityBorder: Record<string, string> = {
 }
 
 const TYPE_FILTERS = [
-  { label: 'All',          value: 'all'          },
-  { label: 'Outfits',      value: 'outfit'        },
-  { label: 'Back Blings',  value: 'backpack'      },
-  { label: 'Pickaxes',     value: 'pickaxe'       },
-  { label: 'Gliders',      value: 'glider'        },
-  { label: 'Emotes',       value: 'emote'         },
-  { label: 'Wraps',        value: 'wrap'          },
-  { label: 'Sprays',       value: 'spray'         },
-  { label: 'Music',        value: 'musicpack'     },
+  { label: 'All',             value: 'all'          },
+  { label: 'Outfits',         value: 'outfit'        },
+  { label: 'Back Blings',     value: 'backpack'      },
+  { label: 'Pickaxes',        value: 'pickaxe'       },
+  { label: 'Gliders',         value: 'glider'        },
+  { label: 'Emotes',          value: 'emote'         },
+  { label: 'Wraps',           value: 'wrap'          },
+  { label: 'Sprays',          value: 'spray'         },
+  { label: 'Music',           value: 'musicpack'     },
   { label: 'Loading Screens', value: 'loadingscreen' },
-  { label: 'Contrails',    value: 'contrail'      },
-  { label: 'Toys',         value: 'toy'           },
+  { label: 'Contrails',       value: 'contrail'      },
+  { label: 'Toys',            value: 'toy'           },
 ]
 
 const PAGE_SIZE = 60
 
-// Modal
+// ── Modal ──────────────────────────────────────────────────────────────────────
 const CosmeticModal = ({ item, onClose }: { item: BRCosmetic; onClose: () => void }) => {
   const rarity   = item.rarity?.value ?? 'common'
   const gradient = rarityColors[rarity] ?? rarityColors.common
@@ -70,7 +70,15 @@ const CosmeticModal = ({ item, onClose }: { item: BRCosmetic; onClose: () => voi
         >×</button>
 
         <div className={`relative bg-linear-to-b ${gradient} aspect-square`}>
-          {image && <img src={image} alt={item.name} className="w-full h-full object-cover" />}
+          {image && (
+            <img
+              src={image}
+              alt={item.name}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
           <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full">
             <span className="text-white text-xs font-bold capitalize">{item.rarity?.displayValue}</span>
           </div>
@@ -106,7 +114,9 @@ const CosmeticModal = ({ item, onClose }: { item: BRCosmetic; onClose: () => voi
               <div className="flex items-center gap-2">
                 <span className="text-gray-500 text-xs w-24">Added</span>
                 <span className="text-white text-xs font-bold">
-                  {new Date(item.added).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                  {new Date(item.added).toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric'
+                  })}
                 </span>
               </div>
             )}
@@ -125,7 +135,13 @@ const CosmeticModal = ({ item, onClose }: { item: BRCosmetic; onClose: () => voi
                 {hasLego && (
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-20 h-20 rounded-xl overflow-hidden bg-yellow-900/30 border border-yellow-500/30">
-                      <img src={item.images.lego!.large ?? item.images.lego!.small} alt="LEGO" className="w-full h-full object-cover" />
+                      <img
+                        src={item.images.lego!.large ?? item.images.lego!.small}
+                        alt="LEGO"
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
                     <span className="text-yellow-400 text-xs font-bold">LEGO</span>
                   </div>
@@ -133,7 +149,13 @@ const CosmeticModal = ({ item, onClose }: { item: BRCosmetic; onClose: () => voi
                 {hasBean && (
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-20 h-20 rounded-xl overflow-hidden bg-pink-900/30 border border-pink-500/30">
-                      <img src={item.images.bean!.large ?? item.images.bean!.small} alt="Bean" className="w-full h-full object-cover" />
+                      <img
+                        src={item.images.bean!.large ?? item.images.bean!.small}
+                        alt="Bean"
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
                     <span className="text-pink-400 text-xs font-bold">FALL GUYS</span>
                   </div>
@@ -147,7 +169,7 @@ const CosmeticModal = ({ item, onClose }: { item: BRCosmetic; onClose: () => voi
   )
 }
 
-// Cosmetic card
+// ── Card ───────────────────────────────────────────────────────────────────────
 const CosmeticCard = ({ item, onClick }: { item: BRCosmetic; onClick: () => void }) => {
   const rarity   = item.rarity?.value ?? 'common'
   const gradient = rarityColors[rarity] ?? rarityColors.common
@@ -174,30 +196,53 @@ const CosmeticCard = ({ item, onClick }: { item: BRCosmetic; onClick: () => void
   )
 }
 
+// ── Main ───────────────────────────────────────────────────────────────────────
 const Cosmetics = () => {
-  const [allItems,    setAllItems]    = useState<BRCosmetic[]>([])
-  const [newItems,    setNewItems]    = useState<BRCosmetic[]>([])
-  const [loading,     setLoading]     = useState(true)
-  const [error,       setError]       = useState<string | null>(null)
-  const [activeType,  setActiveType]  = useState('all')
-  const [search,      setSearch]      = useState('')
-  const [page,        setPage]        = useState(1)
-  const [selected,    setSelected]    = useState<BRCosmetic | null>(null)
+  // Phase 1 — new cosmetics (loads instantly)
+  const [newItems,     setNewItems]     = useState<BRCosmetic[]>([])
+  const [newLoading,   setNewLoading]   = useState(true)
+  const [newError,     setNewError]     = useState<string | null>(null)
+
+  // Phase 2 — full library (loads in background)
+  const [allItems,     setAllItems]     = useState<BRCosmetic[]>([])
+  const [allLoading,   setAllLoading]   = useState(true)
+  const [allError,     setAllError]     = useState<string | null>(null)
+
+  const [activeType,   setActiveType]   = useState('all')
+  const [search,       setSearch]       = useState('')
+  const [page,         setPage]         = useState(1)
+  const [selected,     setSelected]     = useState<BRCosmetic | null>(null)
   const loaderRef = useRef<HTMLDivElement>(null)
 
+  // Phase 1 — fetch new cosmetics immediately
   useEffect(() => {
-    Promise.all([getAllBRCosmetics(), getNewCosmetics()])
-      .then(([all, newData]) => {
-        // Sort all by newest first
+    getNewCosmetics()
+      .then(newData => {
+        setNewItems(newData.items?.br ?? [])
+        setNewLoading(false)
+      })
+      .catch(() => {
+        setNewError('Failed to load new cosmetics')
+        setNewLoading(false)
+      })
+  }, [])
+
+  // Phase 2 — fetch full library in background after new items load
+  useEffect(() => {
+    if (newLoading) return // wait for phase 1 first
+    getAllBRCosmetics()
+      .then(all => {
         const sorted = [...all].sort((a, b) =>
           new Date(b.added).getTime() - new Date(a.added).getTime()
         )
         setAllItems(sorted)
-        setNewItems(newData.items?.br ?? [])
-        setLoading(false)
+        setAllLoading(false)
       })
-      .catch(() => { setError('Failed to load cosmetics'); setLoading(false) })
-  }, [])
+      .catch(() => {
+        setAllError('Failed to load full library')
+        setAllLoading(false)
+      })
+  }, [newLoading])
 
   // Reset page when filter/search changes
   useEffect(() => { setPage(1) }, [activeType, search])
@@ -207,7 +252,10 @@ const Cosmetics = () => {
     if (activeType !== 'all') r = r.filter(i => i.type?.value === activeType)
     if (search.trim()) {
       const q = search.toLowerCase()
-      r = r.filter(i => i.name?.toLowerCase().includes(q) || i.description?.toLowerCase().includes(q))
+      r = r.filter(i =>
+        i.name?.toLowerCase().includes(q) ||
+        i.description?.toLowerCase().includes(q)
+      )
     }
     return r
   }, [allItems, activeType, search])
@@ -229,7 +277,7 @@ const Cosmetics = () => {
     return () => obs.disconnect()
   }, [onIntersect])
 
-  const totalNew = newItems.length
+  const isFilteringOrSearching = activeType !== 'all' || search.trim() !== ''
 
   return (
     <div
@@ -241,15 +289,31 @@ const Cosmetics = () => {
         className="sticky top-0 z-50 border-b border-white/5"
         style={{ background: 'rgba(10,14,26,0.97)', backdropFilter: 'blur(20px)' }}
       >
-        <div className="max-w-screen-2xl mx-auto px-6 py-4">
+        <div className="max-w-screen-2xl mx-auto px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
             <div>
-              <h1 className="text-2xl font-black uppercase tracking-widest">
+              <h1 className="text-xl lg:text-2xl font-black uppercase tracking-widest">
                 Cosmetics <span className="text-[#00d4ff]">Browser</span>
               </h1>
-              <p className="text-gray-500 text-xs mt-0.5">
-                {loading ? 'Loading...' : `${filtered.length.toLocaleString()} cosmetics`}
-              </p>
+              {/* Dynamic subtitle showing loading state */}
+              <div className="flex items-center gap-2 mt-0.5">
+                {allLoading ? (
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full border border-t-[#00d4ff] border-[#00d4ff]/20 animate-spin" />
+                    <p className="text-gray-500 text-xs">
+                      {isFilteringOrSearching
+                        ? 'Loading full library to filter...'
+                        : 'Loading full library in background...'}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-xs">
+                    {isFilteringOrSearching
+                      ? `${filtered.length.toLocaleString()} results`
+                      : `${allItems.length.toLocaleString()} cosmetics`}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Search */}
@@ -264,7 +328,7 @@ const Cosmetics = () => {
                 placeholder="Search cosmetics..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="bg-white/5 border border-white/10 text-white text-sm rounded-xl pl-9 pr-4 py-2 outline-none w-56"
+                className="bg-white/5 border border-white/10 text-white text-sm rounded-xl pl-9 pr-8 py-2 outline-none w-48 lg:w-56 focus:border-[#00d4ff]/50"
                 style={{ colorScheme: 'dark' }}
               />
               {search && (
@@ -277,8 +341,7 @@ const Cosmetics = () => {
           </div>
 
           {/* Type filters */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1"
-            style={{ scrollbarWidth: 'none' }}>
+          <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
             {TYPE_FILTERS.map(f => (
               <button
                 key={f.value}
@@ -296,41 +359,41 @@ const Cosmetics = () => {
         </div>
       </div>
 
-      <div className="max-w-screen-2xl mx-auto px-6 py-8">
+      <div className="max-w-screen-2xl mx-auto px-4 lg:px-6 py-8">
 
-        {/* Loading */}
-        {loading && (
+        {/* Phase 1 loading — new cosmetics */}
+        {newLoading && (
           <div className="flex flex-col items-center justify-center h-96 gap-5">
             <div className="relative w-16 h-16">
               <div className="absolute inset-0 rounded-full border-4 border-[#00d4ff]/20" />
               <div className="absolute inset-0 rounded-full border-4 border-t-[#00d4ff] animate-spin" />
             </div>
             <p className="text-white font-bold text-sm uppercase tracking-widest">Loading Cosmetics</p>
-            <p className="text-gray-500 text-xs">This may take a moment…</p>
+            <p className="text-gray-500 text-xs">Fetching latest items…</p>
           </div>
         )}
 
-        {error && (
+        {newError && (
           <div className="flex items-center justify-center h-64">
-            <p className="text-red-400 font-bold">{error}</p>
+            <p className="text-red-400 font-bold">{newError}</p>
           </div>
         )}
 
-        {!loading && !error && (
+        {!newLoading && !newError && (
           <>
-            {/* NEW COSMETICS SECTION */}
-            {newItems.length > 0 && activeType === 'all' && !search && (
+            {/* ── NEWLY ADDED — shows immediately ── */}
+            {newItems.length > 0 && !isFilteringOrSearching && (
               <div className="mb-12">
                 <div className="flex items-center gap-3 mb-5 pb-3 border-b border-green-500/20">
                   <div className="w-1 h-8 rounded-full bg-green-500 shrink-0" />
-                  <h2 className="text-2xl font-black uppercase tracking-wider text-green-400">
+                  <h2 className="text-xl lg:text-2xl font-black uppercase tracking-wider text-green-400">
                     Newly Added
                   </h2>
                   <span className="bg-green-500/15 text-green-400 text-xs font-bold px-2 py-0.5 rounded-full border border-green-500/30">
-                    {totalNew} new
+                    {newItems.length} new
                   </span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 lg:gap-3">
                   {newItems.map(item => (
                     <CosmeticCard key={item.id} item={item} onClick={() => setSelected(item)} />
                   ))}
@@ -338,47 +401,77 @@ const Cosmetics = () => {
               </div>
             )}
 
-            {/* ALL COSMETICS SECTION */}
+            {/* ── ALL COSMETICS — loads in background ── */}
             <div>
               <div className="flex items-center gap-3 mb-5 pb-3 border-b border-[#00d4ff]/20">
                 <div className="w-1 h-8 rounded-full bg-[#00d4ff] shrink-0" />
-                <h2 className="text-2xl font-black uppercase tracking-wider text-[#00d4ff]">
-                  {activeType === 'all'
-                    ? 'All Cosmetics'
-                    : TYPE_FILTERS.find(f => f.value === activeType)?.label ?? activeType}
+                <h2 className="text-xl lg:text-2xl font-black uppercase tracking-wider text-[#00d4ff]">
+                  {isFilteringOrSearching
+                    ? (activeType !== 'all'
+                        ? TYPE_FILTERS.find(f => f.value === activeType)?.label ?? activeType
+                        : `Results for "${search}"`)
+                    : 'All Cosmetics'}
                 </h2>
-                <span className="bg-white/5 text-gray-400 text-xs font-bold px-2 py-0.5 rounded-full border border-white/10">
-                  {filtered.length.toLocaleString()}
-                </span>
+                {!allLoading && (
+                  <span className="bg-white/5 text-gray-400 text-xs font-bold px-2 py-0.5 rounded-full border border-white/10">
+                    {filtered.length.toLocaleString()}
+                  </span>
+                )}
               </div>
 
-              {filtered.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-48 gap-3">
-                  <p className="text-gray-500 text-lg">No cosmetics found</p>
-                  <button
-                    onClick={() => { setSearch(''); setActiveType('all') }}
-                    className="text-[#00d4ff] text-sm hover:underline"
-                  >
-                    Clear filters
-                  </button>
+              {/* Still loading the full library */}
+              {allLoading && (
+                <div className="flex flex-col items-center justify-center h-48 gap-4">
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full border-4 border-[#00d4ff]/20" />
+                    <div className="absolute inset-0 rounded-full border-4 border-t-[#00d4ff] animate-spin" />
+                  </div>
+                  <p className="text-gray-500 text-sm">Loading full library…</p>
+                  <p className="text-gray-700 text-xs">15,000+ cosmetics incoming</p>
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
-                    {paginated.map(item => (
-                      <CosmeticCard key={item.id} item={item} onClick={() => setSelected(item)} />
-                    ))}
-                  </div>
+              )}
 
-                  {/* Infinite scroll loader */}
-                  <div ref={loaderRef} className="h-16 flex items-center justify-center mt-6">
-                    {paginated.length < filtered.length && (
-                      <div className="w-8 h-8 rounded-full border-2 border-[#00d4ff]/30 border-t-[#00d4ff] animate-spin" />
-                    )}
-                    {paginated.length >= filtered.length && filtered.length > PAGE_SIZE && (
-                      <p className="text-gray-600 text-xs">All {filtered.length.toLocaleString()} cosmetics loaded</p>
-                    )}
-                  </div>
+              {/* Full library error */}
+              {allError && !allLoading && (
+                <div className="flex items-center justify-center h-32">
+                  <p className="text-red-400 text-sm">{allError}</p>
+                </div>
+              )}
+
+              {/* Full library loaded */}
+              {!allLoading && !allError && (
+                <>
+                  {filtered.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-48 gap-3">
+                      <p className="text-gray-500 text-lg">No cosmetics found</p>
+                      <button
+                        onClick={() => { setSearch(''); setActiveType('all') }}
+                        className="text-[#00d4ff] text-sm hover:underline"
+                      >
+                        Clear filters
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 lg:gap-3">
+                        {paginated.map(item => (
+                          <CosmeticCard key={item.id} item={item} onClick={() => setSelected(item)} />
+                        ))}
+                      </div>
+
+                      {/* Infinite scroll trigger */}
+                      <div ref={loaderRef} className="h-16 flex items-center justify-center mt-6">
+                        {paginated.length < filtered.length && (
+                          <div className="w-8 h-8 rounded-full border-2 border-[#00d4ff]/30 border-t-[#00d4ff] animate-spin" />
+                        )}
+                        {paginated.length >= filtered.length && filtered.length > PAGE_SIZE && (
+                          <p className="text-gray-600 text-xs">
+                            All {filtered.length.toLocaleString()} cosmetics loaded
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </div>
@@ -386,7 +479,6 @@ const Cosmetics = () => {
         )}
       </div>
 
-      {/* Detail modal */}
       {selected && (
         <CosmeticModal item={selected} onClose={() => setSelected(null)} />
       )}
