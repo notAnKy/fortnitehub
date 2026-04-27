@@ -95,7 +95,7 @@ const Shop = () => {
   const { entries, loading, error } = useItemShop()
   const [activeFilter,  setActiveFilter]  = useState('all')
   const [filterOpen,    setFilterOpen]    = useState(false)
-  const [sortBy,        setSortBy]        = useState<'default'|'price-asc'|'price-desc'|'name'>('default')
+  const [sortBy, setSortBy] = useState<'default'|'price-asc'|'price-desc'|'name'>('price-desc')
   const [countdown,     setCountdown]     = useState('')
   const [activeSection, setActiveSection] = useState('')
   const [sidebarHover,  setSidebarHover]  = useState(false)
