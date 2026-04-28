@@ -2,6 +2,8 @@
 
 > A full-featured Fortnite companion web application built with **React**, **TypeScript**, and **Tailwind CSS**. Browse the live Item Shop, explore the Battle Royale map, search cosmetics, look up player stats, read the latest news, and discover all game modes — all in one place.
 
+🌐 **Live Site:** [fortnitehub.vercel.app](https://fortnitehub.vercel.app)
+
 ![FNHub Item Shop](./screenshots/item-shop.png)
 
 ---
