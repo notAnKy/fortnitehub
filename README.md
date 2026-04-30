@@ -197,9 +197,7 @@ FNHub is a fan-made project and is **not affiliated with, endorsed by, or connec
 
 ---
 
-## 📄 License
 
-MIT License — feel free to use this project as a reference or starting point for your own work.
 
 ---
 
